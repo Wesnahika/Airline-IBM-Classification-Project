@@ -40,8 +40,6 @@ dim(airline)
 
 As you can see this data set contains more than 1 million instances of flights as well as over 100 attributes. This makes sense given how this data set contains data dating as early as the 1980s.
 
-After taking a look at the data, I can begin visualizing it. 
+After taking a look at the data, I can begin visualizing it.
 
 ## Data Visualization
-
-

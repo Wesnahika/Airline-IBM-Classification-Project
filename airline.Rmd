@@ -9,7 +9,7 @@ output: html_notebook
 
 This project will include Exploratory data analysis and classification models to analyze the given data and attributes that can predict whether or not a plane will be delayed or on time.
 
-To start this project, I will load in a couple of libraries as well via a Github url and the "read.csv" function.
+To start this project, I will load in a couple of libraries as well via a Github URL and the "read.csv" function. Since the .csv file was too large to be placed directly into GitHub, I had to use Git LFS to push the file through git into my respository as a prerequisite.
 
 ```{r}
 library(tidyverse)
@@ -19,3 +19,29 @@ library(tidyverse)
 url<- "https://media.githubusercontent.com/media/Wesnahika/Airline-IBM-Regression-Project/main/airline_2m.csv"
 airline <- read.csv(url)
 ```
+
+Then the data will be inspected by looking at the first 4 instances
+
+```{r}
+head(airline)
+```
+
+Here I can also take a look at the different data types of each variable as well.
+
+```{r}
+glimpse(airline)
+```
+
+Then finally, a look at the dimensions to see how much data I am working with:
+
+```{r}
+dim(airline)
+```
+
+As you can see this data set contains more than 1 million instances of flights as well as over 100 attributes. This makes sense given how this data set contains data dating as early as the 1980s.
+
+After taking a look at the data, I can begin visualizing it. 
+
+## Data Visualization
+
+

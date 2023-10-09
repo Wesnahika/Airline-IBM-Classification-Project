@@ -1,0 +1,21 @@
+---
+title: "Airline IBM Regression Project"
+output: html_notebook
+---
+
+# Airline IBM Regression Project
+
+## Introduction
+
+This project will include Exploratory data analysis and classification models to analyze the given data and attributes that can predict whether or not a plane will be delayed or on time.
+
+To start this project, I will load in a couple of libraries as well via a Github url and the "read.csv" function.
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+url<- "https://media.githubusercontent.com/media/Wesnahika/Airline-IBM-Regression-Project/main/airline_2m.csv"
+airline <- read.csv(url)
+```

@@ -13,6 +13,7 @@ To start this project, I will load in a couple of libraries as well via a Github
 
 ```{r}
 library(tidyverse)
+library(ggplot2)
 ```
 
 ```{r}
@@ -43,3 +44,14 @@ As you can see this data set contains more than 1 million instances of flights a
 After taking a look at the data, I can begin visualizing it.
 
 ## Data Visualization
+
+In this firt visualization I want to look at each of the airlines and visualize the delays they may of had over the years. 
+
+
+
+```{r}
+ggplot(airline, aes (x = Year, y = DepDelay)) + 
+  geom_line() +
+  geom_point()
+```
+

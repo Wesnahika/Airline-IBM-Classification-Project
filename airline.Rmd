@@ -9,7 +9,7 @@ output: html_notebook
 
 This project will include Exploratory data analysis and classification models to analyze the given data and attributes that can predict whether or not a plane will be delayed or on time.
 
-To start this project, I will load in a couple of libraries as well via a Github URL and the "read.csv" function. Since the .csv file was too large to be placed directly into GitHub, I had to use Git LFS to push the file through git into my respository as a prerequisite.
+To start this project, I will load in a couple of libraries as well via a Github URL and the "read.csv" function. Since the .csv file was too large to be placed directly into GitHub, I had to use Git LFS to push the file through git into my repository as a prerequisite.
 
 ```{r}
 library(tidyverse)
@@ -18,7 +18,14 @@ library(ggplot2)
 
 ```{r}
 url<- "https://media.githubusercontent.com/media/Wesnahika/Airline-IBM-Regression-Project/main/airline_2m.csv"
-airline <- read.csv(url)
+airline <- read.csv(url) 
+```
+
+```{r}
+airline <- airline %>% 
+  filter(OriginState == "FL")
+
+airline
 ```
 
 Then the data will be inspected by looking at the first 4 instances
@@ -45,13 +52,26 @@ After taking a look at the data, I can begin visualizing it.
 
 ## Data Visualization
 
-In this firt visualization I want to look at each of the airlines and visualize the delays they may of had over the years. 
-
-
+In this first visualization I am going to create a histogram that looks at the departure delays and arrival delays.
 
 ```{r}
-ggplot(airline, aes (x = Year, y = DepDelay)) + 
-  geom_line() +
-  geom_point()
+depHist <- ggplot(airline, aes(x = DepDelay)) + 
+  geom_histogram(color = "darkgreen", fill = "lightgreen")
+
+depHist
 ```
 
+```{r}
+arrHist <- ggplot(airline, aes(x = ArrDelay)) + 
+  geom_histogram(color = "darkgreen", fill = "lightgreen")
+
+arrHist
+```
+
+As we can see most of the data is skewed right which means that the majority of the data is less than the mean.
+
+Now lets attempt to look at the histograms in regards to the most popular airlines. To start, I will look at all of the unique airlines in this dataset:
+
+```{r}
+
+```

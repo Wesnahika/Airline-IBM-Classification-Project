@@ -14,6 +14,7 @@ To start this project, I will load in a couple of libraries as well via a Github
 ```{r}
 library(tidyverse)
 library(ggplot2)
+library(hablar)
 ```
 
 ```{r}
@@ -22,10 +23,8 @@ airline <- read.csv(url)
 ```
 
 ```{r}
-airline <- airline %>% 
-  filter(OriginState == "FL")
+airline 
 
-airline
 ```
 
 Then the data will be inspected by looking at the first 4 instances
@@ -46,19 +45,98 @@ Then finally, a look at the dimensions to see how much data I am working with:
 dim(airline)
 ```
 
+```{r}
+str(airline)
+```
+
+```{r}
+colnames(airline)
+```
+
+```{r}
+summary(airline)
+```
+
 As you can see this data set contains more than 1 million instances of flights as well as over 100 attributes. This makes sense given how this data set contains data dating as early as the 1980s.
 
-After taking a look at the data, I can begin visualizing it.
+After taking a look at the data, I can begin data cleaning.
+
+## Data Cleaning
+
+First thing I will do is get rid of unnecessary columns (i.e. columns that are mostly empty and contain N/A values)
+
+```{r}
+airline <- airline[-c(66:109)]
+colnames(airline)
+```
+
+
+```
+
+
+In this data set some of the columns are not of the right datatype as well, for example the variable that determines whether or not the departure or arrival time is with 15 minutes of the expected arrival time is currently seen as just an integer and not a character and factor, here is how I change that using the "hablar" library:
+
+```{r}
+airline <- airline %>% convert(chr("DOT_ID_Reporting_Airline","IATA_CODE_Reporting_Airline", "Flight_Number_Reporting_Airline", "OriginAirportID", "OriginAirportSeqID","OriginCityMarketID","OriginStateFips","OriginWac","DestAirportID","DestAirportSeqID","DestCityMarketID","DestStateFips","DestWac", "DepDel15","DepartureDelayGroups","ArrDel15","ArrivalDelayGroups","Cancelled","Diverted","DistanceGroup",
+           ))
+```
+
+
+As a way to make the data clearer I can create variables simply called "arrival performance" and "departure performance" based off of the "ArrDel15" and "DepDel15" variables.
+
+```{r}
+airline <- airline %>% mutate(ArrPerf = case_when(
+  ArrDel15 == 0 ~ "OnTime", 
+  ArrDel15 == 1 ~ "DelayedTime"
+))
+```
+
+```{r}
+airline <- airline %>% mutate(DepPerf = case_when(
+  DepDel15 == 0 ~ "OnTime", 
+  DepDel15 == 1 ~ "DelayedTime"
+))
+```
+
+check column names to see if there: 
+
+```{r}
+colnames(airline)
+```
+
+change to factor and order them correctly:  
+
+```{r}
+airline <- airline %>% mutate_at(c("DepDel15", "ArrDel15", "DepartureDelayGroups", "ArrivalDelayGroups", "ArrPerf", "DepPerf"),as.factor)
+```
+
+```{r}
+airline$ArrPerf <- ordered(airline$ArrPerf, levels = c("OnTime", "DelayedTime"))
+airline$DepPerf <- ordered(airline$DepPerf, levels = c("OnTime", "DelayedTime"))
+```
+
 
 ## Data Visualization
 
-In this first visualization I am going to create a histogram that looks at the departure delays and arrival delays.
+In this first visualization I am going to look at the proportion of the amount of flights that arrived within the 15 minute mark and those that didn't:
 
 ```{r}
-depHist <- ggplot(airline, aes(x = DepDelay)) + 
-  geom_histogram(color = "darkgreen", fill = "lightgreen")
+ArrDelTab <- table(airline$ArrPerf)
+ArrDelTab
+```
 
-depHist
+```{r}
+margin.table(ArrDelTab, 1)
+```
+
+```{r}
+round(prop.table(ArrDelTab),2)
+```
+As we can see, with the majority of the instances, the airlines were within the 15 minute range and there for didn't have any delays, lets visualize this graph: 
+
+```{r}
+airline %>% ggplot(aes(x= ArrPerf)) +
+  geom_bar()
 ```
 
 ```{r}
@@ -70,7 +148,7 @@ arrHist
 
 As we can see most of the data is skewed right which means that the majority of the data is less than the mean.
 
-Now lets attempt to look at the histograms in regards to the most popular airlines. To start, I will look at all of the unique airlines in this dataset:
+Now lets attempt to look at the histograms in regards to the most popular airlines. To start, I will look at all of the unique airlines in this data set:
 
 ```{r}
 

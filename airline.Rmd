@@ -57,30 +57,25 @@ colnames(airline)
 summary(airline)
 ```
 
-As you can see this data set contains more than 1 million instances of flights as well as over 100 attributes. This makes sense given how this data set contains data dating as early as the 1980s.
+As you can see this data set contains more than 1 million instances of flights as well as over 100 attributes. This makes sense given how this data set contains data dating as early as the 1980s. Not only that but many of the variables are in the wrong data type as well as containing a lot of NA values.
 
 After taking a look at the data, I can begin data cleaning.
 
-## Data Cleaning
+## Data Wrangling and Cleaning
 
-First thing I will do is get rid of unnecessary columns (i.e. columns that are mostly empty and contain N/A values)
+First thing I will do is get rid of unnecessary columns (i.e. columns that are mostly empty and contain N/A values as well as ID variables that may cause Over fitting)
 
 ```{r}
-airline <- airline[-c(66:109)]
+airline <- airline[-c(8,9,12:14,21:23,62:64,66:109)]
 colnames(airline)
 ```
-
-
-```
-
 
 In this data set some of the columns are not of the right datatype as well, for example the variable that determines whether or not the departure or arrival time is with 15 minutes of the expected arrival time is currently seen as just an integer and not a character and factor, here is how I change that using the "hablar" library:
 
 ```{r}
-airline <- airline %>% convert(chr("DOT_ID_Reporting_Airline","IATA_CODE_Reporting_Airline", "Flight_Number_Reporting_Airline", "OriginAirportID", "OriginAirportSeqID","OriginCityMarketID","OriginStateFips","OriginWac","DestAirportID","DestAirportSeqID","DestCityMarketID","DestStateFips","DestWac", "DepDel15","DepartureDelayGroups","ArrDel15","ArrivalDelayGroups","Cancelled","Diverted","DistanceGroup",
+airline <- airline %>% convert(chr("Flight_Number_Reporting_Airline","OriginStateFips","OriginWac","DestStateFips","DestWac", "DepDel15","DepartureDelayGroups","ArrDel15","ArrivalDelayGroups","Cancelled","Diverted","DistanceGroup",
            ))
 ```
-
 
 As a way to make the data clearer I can create variables simply called "arrival performance" and "departure performance" based off of the "ArrDel15" and "DepDel15" variables.
 
@@ -98,13 +93,13 @@ airline <- airline %>% mutate(DepPerf = case_when(
 ))
 ```
 
-check column names to see if there: 
+check column names to see if there:
 
 ```{r}
 colnames(airline)
 ```
 
-change to factor and order them correctly:  
+change to factor and order them correctly:
 
 ```{r}
 airline <- airline %>% mutate_at(c("DepDel15", "ArrDel15", "DepartureDelayGroups", "ArrivalDelayGroups", "ArrPerf", "DepPerf"),as.factor)
@@ -115,6 +110,43 @@ airline$ArrPerf <- ordered(airline$ArrPerf, levels = c("OnTime", "DelayedTime"))
 airline$DepPerf <- ordered(airline$DepPerf, levels = c("OnTime", "DelayedTime"))
 ```
 
+Just for more insight on the days of the week, I also decided to add a column that highlights whether or not the day landed on a weekend, given how weekends are the most busiest days for travel.
+
+```{r}
+airline <-airline %>% mutate(Weekend = case_when(
+  DayOfWeek == 6 ~ TRUE,
+  DayOfWeek == 7 ~ TRUE, 
+  TRUE ~ FALSE
+))
+head(airline)
+```
+
+When looking at the data one last time, we notice that there are a lot of NA values when it pertains to the types of delayed such as carrier delays, or weather delays. It seems like the data that corresponds to the delay(in minutes) also correlates to these variables, and the instances that didn't have such a delay, ended up not having any values places in, heres how we fix that: 
+
+```{r}
+missing_rows <- !complete.cases(airline$CarrierDelay, airline$WeatherDelay, airline$NASDelay, airline$SecurityDelay, airline$LateAircraftDelay, airline$DivAirportLandings)
+
+airline$CarrierDelay[missing_rows] <-0
+airline$WeatherDelay[missing_rows] <-0
+airline$NASDelay[missing_rows] <- 0
+airline$SecurityDelay[missing_rows] <- 0
+airline$LateAircraftDelay[missing_rows] <- 0
+airline$DivAirportLandings[missing_rows] <- 0
+
+head(airline)
+```
+```{r}
+summary(airline)
+```
+
+Finally I will reduce the remaining NA values: 
+
+```{r}
+airline <- airline %>%
+  drop_na()
+
+dim(airline)
+```
 
 ## Data Visualization
 
@@ -125,6 +157,7 @@ ArrDelTab <- table(airline$ArrPerf)
 ArrDelTab
 ```
 
+
 ```{r}
 margin.table(ArrDelTab, 1)
 ```
@@ -132,11 +165,19 @@ margin.table(ArrDelTab, 1)
 ```{r}
 round(prop.table(ArrDelTab),2)
 ```
-As we can see, with the majority of the instances, the airlines were within the 15 minute range and there for didn't have any delays, lets visualize this graph: 
+
+As we can see, with the majority of the instances, the airlines were within the 15 minute range and there for didn't have any delays, lets visualize this graph:
 
 ```{r}
 airline %>% ggplot(aes(x= ArrPerf)) +
   geom_bar()
+```
+This shows that the overwhelming amount of the flights were indeed on-time in this data set. 
+
+Next we are going to look at the amount of on-time and delayed flights by specific airline
+
+```{r}
+
 ```
 
 ```{r}

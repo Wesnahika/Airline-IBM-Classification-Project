@@ -1,6 +1,6 @@
 ---
 title: "Airline IBM Regression Project"
-output: html_notebook
+output: github_document
 ---
 
 # Airline IBM Regression Project
@@ -121,7 +121,7 @@ airline <-airline %>% mutate(Weekend = case_when(
 head(airline)
 ```
 
-When looking at the data one last time, we notice that there are a lot of NA values when it pertains to the types of delayed such as carrier delays, or weather delays. It seems like the data that corresponds to the delay(in minutes) also correlates to these variables, and the instances that didn't have such a delay, ended up not having any values places in, heres how we fix that: 
+When looking at the data one last time, we notice that there are a lot of NA values when it pertains to the types of delayed such as carrier delays, or weather delays. It seems like the data that corresponds to the delay(in minutes) also correlates to these variables, and the instances that didn't have such a delay, ended up not having any values places in, heres how we fix that:
 
 ```{r}
 missing_rows <- !complete.cases(airline$CarrierDelay, airline$WeatherDelay, airline$NASDelay, airline$SecurityDelay, airline$LateAircraftDelay, airline$DivAirportLandings)
@@ -135,11 +135,12 @@ airline$DivAirportLandings[missing_rows] <- 0
 
 head(airline)
 ```
+
 ```{r}
 summary(airline)
 ```
 
-Finally I will reduce the remaining NA values: 
+Finally I will reduce the remaining NA values:
 
 ```{r}
 airline <- airline %>%
@@ -157,7 +158,6 @@ ArrDelTab <- table(airline$ArrPerf)
 ArrDelTab
 ```
 
-
 ```{r}
 margin.table(ArrDelTab, 1)
 ```
@@ -172,7 +172,8 @@ As we can see, with the majority of the instances, the airlines were within the 
 airline %>% ggplot(aes(x= ArrPerf)) +
   geom_bar()
 ```
-This shows that the overwhelming amount of the flights were indeed on-time in this data set. 
+
+This shows that the overwhelming amount of the flights were indeed on-time in this data set.
 
 Next we are going to look at the amount of on-time and delayed flights by specific airline
 

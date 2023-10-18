@@ -1,1 +1,1 @@
-# Airline-IBM-Regression-Project
+# Airline-IBM-Classification-Project
